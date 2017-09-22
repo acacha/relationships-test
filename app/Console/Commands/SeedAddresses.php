@@ -7,6 +7,7 @@ use App;
 use File;
 use Illuminate\Console\Command;
 use Scool\EbreEscoolModel\Person;
+use PragmaRX\Countries\Facade as Countries;
 
 /**
  * Class SeedAddresses.
@@ -48,8 +49,31 @@ class SeedAddresses extends Command
     {
         $persons = Person::all();
 
+        $all = Countries::all();
+
+        dd($all);
+
         foreach ($persons as $person) {
-            dd($person);
+            dd($person->postalcode);
+//            $province = obtainProvinceByPostalCode($person->postalcode);
+//            $country = "España";
+//            first_or_create_address(
+//                $postalcode,
+//                $location_id,
+//                $province,
+//                $country
+//            );
+//            "person_homePostalAddress" => "Alcanyiz 26 Atic 2"
+//            $table->string('name');
+//            $table->string('fullname');
+//            $table->string('type');
+//            $table->string('number');
+//            $table->string('floor');
+//            $table->string('floor_number');
+//            $table->integer('postalcode')->unsigned();
+//            $table->integer('location')->unsigned();
+//            $table->string('province');
+//            $table->string('country');
         }
     }
 

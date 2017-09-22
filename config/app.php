@@ -187,6 +187,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        PragmaRX\Countries\ServiceProvider::class,
+
+
     ],
 
     /*
@@ -244,6 +247,9 @@ return [
         'AdminLTE' => Acacha\AdminLTETemplateLaravel\Facades\AdminLTE::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
         #llum_aliases
+
+
+        'Countries'=> PragmaRX\Countries\Facade::class,
 
     ],
 
