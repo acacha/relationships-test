@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "53ebd79b1c0315c0d005ffb717a60ce1",
+    "content-hash": "d557dd091cbbfe8dd023e96facd75ce0",
     "packages": [
         {
             "name": "acacha/admin-lte-template-laravel",
@@ -179,6 +179,78 @@
                 "laravel"
             ],
             "time": "2017-06-20T13:28:48+00:00"
+        },
+        {
+            "name": "acacha/relationships",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../relationships",
+                "reference": "35979d5c27af409f6e407a7634cfcf6982fa6d43",
+                "shasum": null
+            },
+            "require": {
+                "php": "~5.6|~7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=5.4.3",
+                "squizlabs/php_codesniffer": "^2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Acacha\\Relationships\\Providers\\RelationshipsProvider"
+                    ],
+                    "aliases": {
+                        "ScoolStaff": "Acacha\\Relationships\\Relationships"
+                    }
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Acacha\\Relationships\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Acacha\\Relationships\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "check-style": [
+                    "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
+                ],
+                "fix-style": [
+                    "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergi Tur Badenas",
+                    "email": "sergiturbadenas@gmail.com",
+                    "homepage": "https://github.com/acacha",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Person/Customers relationships data management for Laravel",
+            "homepage": "https://github.com/acacha/relationships",
+            "keywords": [
+                "acacha",
+                "relationships"
+            ]
         },
         {
             "name": "acacha/user",
@@ -4623,7 +4695,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "acacha/relationships": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
