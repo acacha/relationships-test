@@ -41,6 +41,102 @@ class SeedAddresses extends Command
     }
 
     /**
+     * Obtain state id by province name.
+     *
+     * @param $name
+     * @return int|null
+     */
+    protected function obtainStateIdByProvinceName($name)
+    {
+        if (! $name) return null;
+
+        switch ($name) {
+            case 'Tarragona':
+                return 9;
+            case 'Castelló':
+                return 10;
+            case 'Castellò':
+                return 10;
+            case 'Teruel':
+                return 2;
+            case 'València':
+                return 10;
+            case 'Velència':
+                return 10;
+            case 'Velencia':
+                return 10;
+            case 'Valencia':
+                return 10;
+            case 'Jaén':
+                return 1;
+            case 'Alicante':
+                return 10;
+            case 'Alacant':
+                return 10;
+            case 'Alicant':
+                return 10;
+            case 'Zaragoza':
+                return 2;
+            case 'Girona':
+                return 9;
+            case 'Menorca':
+                return 4;
+            case 'Barcelona':
+                return 9;
+            default:
+                die('Error with: ' . $name);
+        }
+
+    }
+
+    /**
+     * Obtain province id by province name.
+     *
+     * @param $name
+     * @return int|null
+     */
+    protected function obtainProvinceIdByProvinceName($name)
+    {
+        if (! $name) return null;
+
+        switch ($name) {
+            case 'Tarragona':
+                return 36;
+            case 'Castelló':
+                return 51;
+            case 'Castellò':
+                return 51;
+            case 'Teruel':
+                return 7;
+            case 'València':
+                return 52;
+            case 'Velència':
+                return 52;
+            case 'Valencia':
+                return 52;
+            case 'Jaén':
+                return 19;
+            case 'Alicante':
+                return 50;
+            case 'Alacant':
+                return 50;
+            case 'Alicant':
+                return 50;
+            case 'Zaragoza':
+                return 8;
+            case 'Girona':
+                return 34;
+            case 'Menorca':
+                return 44;
+            case 'Barcelona':
+                return 33;
+            default:
+                die('Error with: ' . $name);
+        }
+
+    }
+
+    /**
      * Execute the console command.
      *
      * @return mixed
@@ -49,42 +145,50 @@ class SeedAddresses extends Command
     {
         $persons = Person::all();
 
-        $all = Countries::all();
-
-        dd($all);
-
         foreach ($persons as $person) {
-            dd($person->postalcode);
-//            $province = obtainProvinceByPostalCode($person->postalcode);
+            if(! trim($person->homePostalAddress)) continue;
+//            $postalcode = $person->postalcode;
+
+//            "person_locality_id" => 360
+//    "person_locality_name" => "Tortosa"
+
+            dump($person);
+            dump($person->location);
+            continue;
 //            $country = "España";
-//            first_or_create_address(
-//                $postalcode,
-//                $location_id,
-//                $province,
-//                $country
-//            );
-//            "person_homePostalAddress" => "Alcanyiz 26 Atic 2"
-//            $table->string('name');
-//            $table->string('fullname');
-//            $table->string('type');
-//            $table->string('number');
-//            $table->string('floor');
-//            $table->string('floor_number');
-//            $table->integer('postalcode')->unsigned();
-//            $table->integer('location')->unsigned();
-//            $table->string('province');
-//            $table->string('country');
+            $fullname = trim($person->homePostalAddress);
+            $name = null;
+            //TODO default Type : Carrer
+            $type = null;
+            $number = null;
+            $floor = null;
+            $floor_number = null;
+            $postalcode = null;
+
+//            "person_locality_id" => 3
+//    "person_locality_name" => ""
+//            "postalcode" => ""
+//    "state" => ""
+
+
+            $location = null;
+            $province = $this->obtainProvinceIdByProvinceName($person->state);
+//            $state = $this->obtainStateIdByProvinceName($person->state);
+            $country_code = "ESP";
+            first_or_create_address(
+                $fullname,
+                $name,
+                $type,
+                $number,
+                $floor,
+                $floor_number,
+                $postalcode,
+                $location,
+                $province,
+                $country_code
+            );
+
         }
     }
 
-    /**
-     * Clean string.
-     *
-     * @param $string
-     * @return mixed
-     */
-    protected function clean($string)
-    {
-        return preg_replace('/\s+/', '', trim($string));
-    }
 }

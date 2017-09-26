@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use Acacha\Relationships\Wrappers\CodigosPostalesListImport;
+use App;
+use File;
 use Illuminate\Console\Command;
 use Scool\EbreEscoolModel\Person;
 
@@ -43,16 +46,31 @@ class SeedLocations extends Command
      */
     public function handle()
     {
-        $persons = Person::all();
-        $locationsDone = [];
-        foreach ($persons as $person) {
-            if ($person->postalcode == null && $person->locality_name == null) continue;
-            $key = trim($person->postalcode) . '_' . trim(ucfirst($person->locality_name));
-            if ( ! array_key_exists($key,$locationsDone) ) {
-                print("seed_location('" . trim($person->postalcode) . "', '" . trim(ucfirst($person->locality_name)) . "');\n");
-            }
-            $locationsDone[$key] = true ;
+        $excel = App::make('excel');
+        $sourceFiles = RELATIONSHIPS_PATH . '/data/postalcodes';
+        $files = $this->sort(File::allFiles($sourceFiles));
+        foreach ($files as $file)
+        {
+//            dump((string) $file);
+            $codigosPostales = new CodigosPostalesListImport(app(),$excel, (string) $file);
+            $codigosPostales->noHeading();
+            $codigosPostales->each(function($codigoPostal) {
+                $postalcode = "0";
+                $location = "1";
+                first_or_create_location( trim($codigoPostal->$location) ,trim($codigoPostal->$postalcode) );
+            });
         }
+    }
 
+    /**
+     * @param $files
+     * @return array
+     */
+    private function sort($files)
+    {
+        $files = array_sort($files, function ($file) {
+            return $file->getFilename();
+        });
+        return $files;
     }
 }
