@@ -2,12 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Acacha\Relationships\Wrappers\CodigosPostalesListImport;
+use Acacha\Relationships\Models\Location;
 use App;
-use File;
 use Illuminate\Console\Command;
 use Scool\EbreEscoolModel\Person;
-use PragmaRX\Countries\Facade as Countries;
 
 /**
  * Class SeedAddresses.
@@ -143,37 +141,20 @@ class SeedAddresses extends Command
      */
     public function handle()
     {
+        seed_provinces();
         $persons = Person::all();
 
         foreach ($persons as $person) {
             if(! trim($person->homePostalAddress)) continue;
-//            $postalcode = $person->postalcode;
 
-//            "person_locality_id" => 360
-//    "person_locality_name" => "Tortosa"
-
-            dump($person);
-            dump($person->location);
-            continue;
-//            $country = "España";
             $fullname = trim($person->homePostalAddress);
             $name = null;
-            //TODO default Type : Carrer
             $type = null;
             $number = null;
             $floor = null;
             $floor_number = null;
-            $postalcode = null;
-
-//            "person_locality_id" => 3
-//    "person_locality_name" => ""
-//            "postalcode" => ""
-//    "state" => ""
-
-
-            $location = null;
+            $location = $this->obtainLocationIdByPersonalInfo($person);
             $province = $this->obtainProvinceIdByProvinceName($person->state);
-//            $state = $this->obtainStateIdByProvinceName($person->state);
             $country_code = "ESP";
             first_or_create_address(
                 $fullname,
@@ -182,13 +163,36 @@ class SeedAddresses extends Command
                 $number,
                 $floor,
                 $floor_number,
-                $postalcode,
                 $location,
                 $province,
                 $country_code
             );
 
         }
+    }
+
+    /**
+     * Obtain location id by personal info.
+     *
+     * @param $person
+     * @return int|null
+     */
+    protected function obtainLocationIdByPersonalInfo($person)
+    {
+        if ( $person->person_locality_name == null && $person->postalcode ==null ) return null;
+        if ( $person->person_locality_name == "" && $person->postalcode == "" ) return null;
+
+        $locations  = Location::where('name','like',$person->person_locality_name)->get();
+        if ($locations->count() != 1) {
+            if (!$person->postalcode) return null;
+            $locations = $locations->where('postalcode', $person->postalcode);
+        }
+        if ($locations->count() == 0) {
+            if (!$person->postalcode) return null;
+            $locations = Location::where('postalcode', $person->postalcode);
+        }
+        if( $locations->count() == 0 ) return null;
+        return $locations->first()->id;
     }
 
 }
