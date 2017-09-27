@@ -189,6 +189,9 @@ return [
 
         PragmaRX\Countries\ServiceProvider::class,
 
+        Collective\Remote\RemoteServiceProvider::class,
+
+
 
     ],
 
@@ -250,6 +253,8 @@ return [
 
 
         'Countries'=> PragmaRX\Countries\Facade::class,
+        'SSH' => Collective\Remote\RemoteFacade::class,
+
 
     ],
 

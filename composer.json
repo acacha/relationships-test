@@ -7,12 +7,13 @@
     "require": {
         "php": ">=7.0.0",
         "acacha/admin-lte-template-laravel": "^5.0",
+        "acacha/relationships": "dev-master",
         "barryvdh/laravel-debugbar": "^3.1",
         "barryvdh/laravel-ide-helper": "^2.4",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
-        "acacha/relationships": "dev-master",
+        "laravelcollective/remote": "^5.5",
         "scool/ebre_escool_model": "dev-master"
     },
     "require-dev": {

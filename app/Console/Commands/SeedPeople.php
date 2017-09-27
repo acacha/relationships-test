@@ -83,11 +83,11 @@ class SeedPeople extends Command
     public function handle()
     {
         //Dependencies
-        seed_provinces();
-        seed_identifiers();
-        seed_contacts();
-        seed_locations();
-        seed_addresses();
+//        seed_provinces();
+//        seed_identifiers();
+//        seed_contacts();
+//        seed_locations();
+//        seed_addresses();
 
         $persons = Person::all();
 
@@ -101,6 +101,7 @@ class SeedPeople extends Command
             $birthplace_id = null;
             $gender = $this->calculateGender(trim($person->person_gender));
             $civil_status = null;
+            $notes = trim($person->person_notes);
 
             dump('Adding person ' . $name);
 
