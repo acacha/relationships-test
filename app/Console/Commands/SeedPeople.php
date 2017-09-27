@@ -5,12 +5,16 @@ namespace App\Console\Commands;
 use Acacha\Relationships\Models\Address;
 use Acacha\Relationships\Models\Contact;
 use Acacha\Relationships\Models\Identifier;
+use Acacha\Relationships\Models\PersonMigrationInfo;
+use Acacha\Relationships\Models\Photo;
+use Acacha\Relationships\Models\UserMigrationInfo;
 use App;
 use App\Console\Commands\Traits\ObtainsLocationIdsByPersonalInfo;
 use App\Console\Commands\Traits\ObtainsProvincesIdsByProvinceName;
 use Hash;
 use Illuminate\Console\Command;
 use Scool\EbreEscoolModel\Person;
+use Scool\EbreEscoolModel\User;
 
 /**
  * Class SeedPeople.
@@ -114,12 +118,19 @@ class SeedPeople extends Command
                 $birthdate,
                 $birthplace_id,
                 $gender,
-                $civil_status
+                $civil_status,
+                $notes
             );
             if (!$newPerson) {
                 dump('Skipped. Already exists on database.');
                 continue;
             }
+
+            //Person migration info
+            PersonMigrationInfo::create([
+                'person_id' => $newPerson->id,
+                'original_person_id' => $person->person_id,
+            ]);
 
             //Users identifiers
             if ( ! in_array($person->official_id_type, [1,2,3,4]) ) {
@@ -242,7 +253,6 @@ class SeedPeople extends Command
                 }
             }
 
-
             // Seed user
             if (! $person->person_email ) {
                 dump('Skipping user without email: ' . $name);
@@ -264,6 +274,25 @@ class SeedPeople extends Command
             } catch (\Illuminate\Database\QueryException $qe) {
                 if ( !str_contains($qe->getMessage(),'Duplicate entry') ) dump('Exception: '. $qe->getMessage());
             }
+
+            //User migration info
+            if ($user) {
+                UserMigrationInfo::create([
+                    'user_id' => $user->id,
+                    'original_user_id' => User::where([ 'person_id' => $person->person_id])->first()->id,
+                ]);
+            }
+
+            //Photos
+            if ($person->person_photo) {
+                $photo = Photo::where([
+                    'storage' => 'local_photos',
+                    'path'    => 'photos/' . $person->person_photo
+                ])->first();
+                $newPerson->photos()->save($photo);
+            }
+
+
         }
     }
 

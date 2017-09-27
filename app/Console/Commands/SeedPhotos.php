@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use File;
 use Illuminate\Console\Command;
 use Scool\EbreEscoolModel\Person;
 use SSH;
@@ -19,7 +20,7 @@ class SeedPhotos extends Command
      *
      * @var string
      */
-    protected $signature = 'seed:photos';
+    protected $signature = 'seed:photos {--skip-download : Do not download files}';
 
     /**
      * The console command description.
@@ -54,9 +55,10 @@ class SeedPhotos extends Command
                 $local_storage = '/../relationships-test/storage/';
                 $folder = 'photos/';
                 $localPath = RELATIONSHIPS_PATH . $local_storage . $folder . $person->person_photo;
-                SSH::into('ebre-escool')->get($remotePath, $localPath);
-
                 first_or_create_photo( 'local_photos' , $folder . $person->person_photo);
+
+                if (! $this->option('skip-download')) SSH::into('ebre-escool')->get($remotePath, $localPath);
+                
             }
         }
     }

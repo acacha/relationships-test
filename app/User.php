@@ -2,12 +2,18 @@
 
 namespace App;
 
+use Acacha\Relationships\Models\Traits\HasUserMigrationInfo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Class User.
+ *
+ * @package App
+ */
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasUserMigrationInfo;
 
     /**
      * The attributes that are mass assignable.
