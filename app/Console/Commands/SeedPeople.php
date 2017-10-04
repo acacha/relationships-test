@@ -87,11 +87,12 @@ class SeedPeople extends Command
     public function handle()
     {
         //Dependencies
-//        seed_provinces();
-//        seed_identifiers();
-//        seed_contacts();
-//        seed_locations();
-//        seed_addresses();
+        seed_provinces();
+        seed_identifiers();
+        seed_contacts();
+        seed_locations();
+        seed_addresses();
+        seed_photos();
 
         $persons = Person::all();
 
@@ -277,10 +278,13 @@ class SeedPeople extends Command
 
             //User migration info
             if ($user) {
-                UserMigrationInfo::create([
-                    'user_id' => $user->id,
-                    'original_user_id' => User::where([ 'person_id' => $person->person_id])->first()->id,
+                $ebreescoolUser = User::where([ 'person_id' => $person->person_id])->first();
+                if ($ebreescoolUser) {
+                    UserMigrationInfo::create([
+                        'user_id' => $user->id,
+                        'original_user_id' => $ebreescoolUser->id
                 ]);
+                }
             }
 
             //Photos
@@ -289,10 +293,10 @@ class SeedPeople extends Command
                     'storage' => 'local_photos',
                     'path'    => 'photos/' . $person->person_photo
                 ])->first();
+                $photo->order = 1;
+                $photo->save();
                 $newPerson->photos()->save($photo);
             }
-
-
         }
     }
 

@@ -58,7 +58,7 @@ class SeedPhotos extends Command
                 first_or_create_photo( 'local_photos' , $folder . $person->person_photo);
 
                 if (! $this->option('skip-download')) SSH::into('ebre-escool')->get($remotePath, $localPath);
-                
+
             }
         }
     }

@@ -2,9 +2,12 @@
 
 namespace App;
 
+use Acacha\Relationships\Models\Traits\HasPersons;
 use Acacha\Relationships\Models\Traits\HasUserMigrationInfo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class User.
@@ -13,7 +16,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 class User extends Authenticatable
 {
-    use Notifiable, HasUserMigrationInfo;
+    use Notifiable, HasUserMigrationInfo, HasRoles, HasApiTokens, HasPersons;
 
     /**
      * The attributes that are mass assignable.

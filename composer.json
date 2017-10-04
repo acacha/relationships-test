@@ -8,13 +8,17 @@
         "php": ">=7.0.0",
         "acacha/admin-lte-template-laravel": "^5.0",
         "acacha/relationships": "dev-master",
+        "acacha/stateful-eloquent": "dev-master",
+        "acacha/users": "dev-master",
         "barryvdh/laravel-debugbar": "^3.1",
         "barryvdh/laravel-ide-helper": "^2.4",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
+        "laravel/passport": "^4.0",
         "laravel/tinker": "~1.0",
         "laravelcollective/remote": "^5.5",
-        "scool/ebre_escool_model": "dev-master"
+        "scool/ebre_escool_model": "dev-master",
+        "spatie/laravel-permission": "^2.6"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

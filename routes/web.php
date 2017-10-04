@@ -11,14 +11,28 @@
 |
 */
 
+use Acacha\Relationships\Models\Person;
+
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/prova', function () {
+    var_dump(factory(Person::class)->make());
 });
 
 Route::group(['middleware' => 'auth'], function () {
     //    Route::get('/link1', function ()    {
 //        // Uses Auth Middleware
 //    });
+
+    Route::get('/tokens', function () {
+        return view('tokens');
+    });
+
+    Route::get('/wizard','WizardController@index');
+
+    Route::post('/upload','UploadController@index');
 
     //Please do not remove this if you want adminlte:route and adminlte:link commands to works correctly.
     #adminlte_routes

@@ -1,6 +1,9 @@
 {
     "version": 2,
     "paths": [
-        "../relationships"
+        "../relationships",
+        "../../../acacha/stateful-eloquent",
+        "../../../acacha/users/package",
+        "../../../scool/ebre_escool_model"
     ]
 }
