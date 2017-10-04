@@ -13,10 +13,10 @@ trait CheckJsonAPIUriAuthorization
      * @param $uri
      * @param string $method
      */
-    protected function check_json_api_uri_authorization($uri, $method = 'get') {
-        $this->unauthorized_user_cannot_browse_uri($uri, $method);
-        $this->an_user_cannot_browse_uri_api($uri, $method);
-        $this->authorized_user_can_browse_uri_api($uri, $method);
+    protected function check_json_api_uri_authorization($uri, $method = 'get', $attributes = []) {
+        $this->unauthorized_user_cannot_browse_uri($uri, $method, $attributes);
+        $this->an_user_cannot_browse_uri_api($uri, $method, $attributes);
+        $this->authorized_user_can_browse_uri_api($uri, $method, $attributes);
     }
 
     /**
@@ -25,9 +25,9 @@ trait CheckJsonAPIUriAuthorization
      * @param $uri
      * @param string $method
      */
-    protected function unauthorized_user_cannot_browse_uri($uri, $method = 'get')
+    protected function unauthorized_user_cannot_browse_uri($uri, $method = 'get', $attributes = [])
     {
-        $response = $this->json(strtoupper($method),$uri);
+        $response = $this->json(strtoupper($method),$uri, $attributes);
         $response->assertStatus(401);
     }
 
@@ -37,10 +37,10 @@ trait CheckJsonAPIUriAuthorization
      * @param $uri
      * @param string $method
      */
-    protected function an_user_cannot_browse_uri($uri, $method = 'get')
+    protected function an_user_cannot_browse_uri($uri, $method = 'get', $attributes = [])
     {
         $this->signIn(null,'api');
-        $response = $this->json(strtoupper($method),$uri);
+        $response = $this->json(strtoupper($method),$uri, $attributes);
         $response->assertStatus(403);
     }
 
@@ -50,10 +50,10 @@ trait CheckJsonAPIUriAuthorization
      * @param $uri
      * @param string $method
      */
-    protected function an_user_cannot_browse_uri_api($uri, $method = 'get')
+    protected function an_user_cannot_browse_uri_api($uri, $method = 'get', $attributes = [])
     {
         $this->signIn(null,'api');
-        $response = $this->json(strtoupper($method),$uri);
+        $response = $this->json(strtoupper($method),$uri, $attributes);
         $response->assertStatus(403);
     }
 
@@ -63,10 +63,10 @@ trait CheckJsonAPIUriAuthorization
      * @param $uri
      * @param string $method
      */
-    protected function authorized_user_can_browse_uri_api( $uri, $method = 'get')
+    protected function authorized_user_can_browse_uri_api( $uri, $method = 'get', $attributes = [])
     {
         $this->signInAsRelationshipsManager('api')
-            ->$method($uri)->assertStatus(200);
+            ->json(strtoupper($method),$uri, $attributes)->assertStatus(200);
     }
 
 }

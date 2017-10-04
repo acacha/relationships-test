@@ -80,7 +80,9 @@ class PersonPhotoTest extends TestCase
     public function check_authorization_uri_to_store_photo()
     {
         $person = create(Person::class);
-        $this->check_json_api_uri_authorization("/api/v1/person/". $person->id . "/photo",'post');
+        $this->check_json_api_uri_authorization("/api/v1/person/". $person->id . "/photo",'post',[
+            'photo' => UploadedFile::fake()->image('photo.png')
+        ]);
     }
 
     /**
@@ -127,18 +129,15 @@ class PersonPhotoTest extends TestCase
      */
     public function person_photo_can_be_stored_if_already_exists_one()
     {
-        $this->signInAsRelationshipsManager();
+        $this->signInAsRelationshipsManager('api');
 
         $person = create(Person::class);
-        $path1 = Storage::putFileAs('user_photos', UploadedFile::fake()->image('testphoto.png'), 'testphoto1.png');
-        $person->photos()->create([
-            'storage' => 'local',
-            'path' => 'user_photos/testphoto1.png'
-        ]);
-
         Storage::fake('local');
+        $response = $this->json('POST', '/api/v1/person/' . $person->id . '/photo', [
+            'photo' => UploadedFile::fake()->image('testphoto1.png')
+        ]);
+        $path1 = json_decode($response->getContent())->path;
 
-        $person = create(Person::class);
         $response = $this->json('POST', '/api/v1/person/' . $person->id . '/photo', [
             'photo' => UploadedFile::fake()->image('testphoto2.png')
         ]);
@@ -434,13 +433,16 @@ class PersonPhotoTest extends TestCase
     /**
      * Test authorization for update person photo.
      *
+     * @group p
      * @test
      * @return void
      */
     public function check_authorization_uri_to_update_photo()
     {
         $person = $this->createPersonWithPhoto();
-        $this->check_json_api_uri_authorization("/api/v1/person/" . $person->id . "/photo",'put');
+        $this->check_json_api_uri_authorization("/api/v1/person/" . $person->id . "/photo",'put',[
+            'photo' => UploadedFile::fake()->image('photo.png')
+        ]);
     }
 
     /**

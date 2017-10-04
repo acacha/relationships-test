@@ -15,8 +15,7 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('personal-data', require('./components/relationships/PersonalData.vue'));
-Vue.component('user-profile-photo', require('./components/user-profile-photo/UserProfilePhoto.vue'));
+// require('relationships-bootstrap');
 
 Vue.component(
   'passport-clients',
