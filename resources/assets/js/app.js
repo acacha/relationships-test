@@ -15,7 +15,7 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-// require('relationships-bootstrap');
+require('relationships-bootstrap');
 
 Vue.component(
   'passport-clients',
