@@ -28,7 +28,7 @@ class TestPersonProfilePhotoComponent extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $user = factory(\App\User::class)->create();
             view()->share('user', $user);
-            $browser->loginAs($user)->visit('/test/component/user-profile-photo')
+            $browser->loginAs($user)->visit('/test/component/person-profile-photo')
                 ->assertSee('Upload photo')
                 ->assertVisible("img[src^='/images/defaultmale.png']");
         });
@@ -49,7 +49,7 @@ class TestPersonProfilePhotoComponent extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $user = factory(\App\User::class)->create();
             view()->share('user', $user);
-            $browser->loginAs($user)->visit('/test/component/user-profile-photo?case=female')
+            $browser->loginAs($user)->visit('/test/component/person-profile-photo?case=female')
                 ->assertSee('Upload photo')
                 ->assertVisible("img[src^='/images/defaultfemale.png']");
         });
@@ -71,7 +71,7 @@ class TestPersonProfilePhotoComponent extends DuskTestCase
             $user = factory(\App\User::class)->create();
             view()->share('user', $user);
             add_photo_to_first_user();
-            $browser->loginAs($user)->visit('/test/component/user-profile-photo?case=with-user-id&user_id=1')
+            $browser->loginAs($user)->visit('/test/component/person-profile-photo?case=with-person-id&user_id=1')
                 ->assertSee('Upload photo')
                 ->assertSee('Click to upload')
                 ->assertVisible("img[src='/person/1/photo']");
@@ -93,7 +93,7 @@ class TestPersonProfilePhotoComponent extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $user = factory(\App\User::class)->create();
             view()->share('user', $user);
-            $browser->loginAs($user)->visit('/test/component/user-profile-photo?case=with-user-id&user_id=1')
+            $browser->loginAs($user)->visit('/test/component/person-profile-photo?case=with-person-id&person_id=1')
                 ->assertSee('Upload photo')
                 ->assertSee('Click to upload')
                 ->assertVisible("img[src^='/images/defaultmale.png']");
@@ -117,10 +117,10 @@ class TestPersonProfilePhotoComponent extends DuskTestCase
             $user = factory(\App\User::class)->create();
             view()->share('user', $user);
             add_photo_to_first_user();
-            $browser->loginAs($user)->visit('/test/component/user-profile-photo')
+            $browser->loginAs($user)->visit('/test/component/person-profile-photo')
                 ->assertSee('Upload photo')
                 ->assertSee('Click to upload')
-                ->pause(9999999)
+//                ->pause(9999999)
                 ->assertVisible("img[src='/person/1/photo']");
         });
 

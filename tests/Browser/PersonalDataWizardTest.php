@@ -10,7 +10,7 @@ class PersonalDataWizardTest extends DuskTestCase
 {
     /**
      * A Dusk test example.
-     *
+     * TODO
      * @return void
      */
     public function testExample()

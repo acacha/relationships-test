@@ -32,12 +32,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/wizard','WizardController@index');
 
-    Route::post('/upload','UploadController@index');
-
     //Please do not remove this if you want adminlte:route and adminlte:link commands to works correctly.
     #adminlte_routes
 
-    Route::get('/test/component/user-profile-photo', 'UserProfilePhotoTestController@test');
+    Route::get('/test/component/user-profile-photo', 'PersonProfilePhotoTestController@test');
 });
 
 

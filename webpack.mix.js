@@ -13,7 +13,8 @@ const { mix } = require('laravel-mix');
 
 mix.js('resources/assets/js/app.js', 'public/js')
    .js('resources/assets/js/app-landing.js', 'public/js/app-landing.js')
-   .webpackConfig({
+  .sourceMaps()
+  .webpackConfig({
     resolve: {
       modules: [
         path.resolve(__dirname, '../relationships/resources/assets/js'),

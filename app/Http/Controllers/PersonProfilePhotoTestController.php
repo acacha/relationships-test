@@ -5,17 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 /**
- * Class UserProfilePhotoTestController.
+ * Class PersonProfilePhotoTestController.
  *
  * @package App\Http\Controllers
  */
-class UserProfilePhotoTestController extends Controller
+class PersonProfilePhotoTestController extends Controller
 {
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function test(Request $request)
     {
-        return view('tests.components.user-profile-photo', $request->all());
+        return view('tests.components.person-profile-photo', $request->all());
     }
 }

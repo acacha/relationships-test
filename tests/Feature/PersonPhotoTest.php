@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Acacha\Relationships\Models\Person;
 use App;
+use App\User;
 use Illuminate\Http\UploadedFile;
 use Storage;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -80,9 +81,36 @@ class PersonPhotoTest extends TestCase
     public function check_authorization_uri_to_store_photo()
     {
         $person = create(Person::class);
-        $this->check_json_api_uri_authorization("/api/v1/person/". $person->id . "/photo",'post',[
-            'photo' => UploadedFile::fake()->image('photo.png')
-        ]);
+        $otherPerson = create(Person::class);
+
+        $uri = "/api/v1/person/". $person->id . "/photo";
+        $attributes = [ 'photo' => UploadedFile::fake()->image('photo.png')];
+        $this->unauthorized_user_cannot_browse_uri($uri, 'POST' ,$attributes);
+        $user = create(User::class);
+        $this->signIn($user,'api');
+        $user->persons()->attach($otherPerson);
+        $response = $this->json('POST',$uri, $attributes);
+        $response->assertStatus(403);
+
+        $this->authorized_user_can_browse_uri_api($uri, 'POST', $attributes);
+
+    }
+
+    /**
+     * Test authorization for URI /api/v1/person/{id}/photo.
+     *
+     * @test
+     * @return void
+     */
+    public function check_person_not_associated_to_user_returns_404()
+    {
+        //Given a person
+        $person = create(Person::class);
+        //Given a user
+        $this->signIn(null,'api');
+        $response = $this->json('POST',"/api/v1/person/". $person->id . "/photo");
+        //The person is not associated to user so 404 not found
+        $response->assertStatus(404);
     }
 
     /**
@@ -104,6 +132,20 @@ class PersonPhotoTest extends TestCase
     }
 
     /**
+     * Test an user without personal info cannot see his own photos (404 error).
+     *
+     * @test
+     * @return void
+     */
+    public function and_user_without_personal_info_cannot_show_owned_photos()
+    {
+        $user = create(User::class);
+        $this->signIn($user);
+        $response = $this->json('GET','/person/1/photo');
+        $response->assertStatus(404);
+    }
+
+    /**
      * Test an user cannot see others photos.
      *
      * @test
@@ -113,18 +155,18 @@ class PersonPhotoTest extends TestCase
     {
         $user = $this->createUserWithFoto();
         $this->signIn($user);
-        $person = $this->createPersonWithPhoto('user_photos/testphoto1.png');
+        $filename = $this->randomFileName();
+        $person = $this->createPersonWithPhoto();
         $response = $this->json('GET','/person/' . $person->id .'/photo');
         $response->assertStatus(403);
         Storage::delete($person->photos()->first()->path);
-        Storage::delete('user_photos/testphoto1.png');
+        Storage::delete('user_photos/' . $filename . '.png');
     }
 
     /**
      * Person photo can be stored if already exists one.
      *
      * @test
-     * @group prova
      * @return void
      */
     public function person_photo_can_be_stored_if_already_exists_one()
@@ -133,13 +175,15 @@ class PersonPhotoTest extends TestCase
 
         $person = create(Person::class);
         Storage::fake('local');
+        $filename1 = $this->randomFileName();
         $response = $this->json('POST', '/api/v1/person/' . $person->id . '/photo', [
-            'photo' => UploadedFile::fake()->image('testphoto1.png')
+            'photo' => UploadedFile::fake()->image($filename1 . '.png')
         ]);
         $path1 = json_decode($response->getContent())->path;
+        $filename2 = $this->randomFileName();
 
         $response = $this->json('POST', '/api/v1/person/' . $person->id . '/photo', [
-            'photo' => UploadedFile::fake()->image('testphoto2.png')
+            'photo' => UploadedFile::fake()->image($filename2. '.png')
         ]);
         $path2 = json_decode($response->getContent())->path;
 
@@ -149,12 +193,14 @@ class PersonPhotoTest extends TestCase
         $this->assertDatabaseHas('photos', [
             'storage' => 'local',
             'path' => $path1,
+            'origin' => $filename1. '.png',
             'person_id' => $person->id,
         ]);
 
         $this->assertDatabaseHas('photos', [
             'storage' => 'local',
             'path' => $path2,
+            'origin' => $filename2. '.png',
             'person_id' => $person->id,
         ]);
 
@@ -172,12 +218,12 @@ class PersonPhotoTest extends TestCase
     /**
      * Test store photo person.
      *
-     * @group working
      * @test
      * @return void
      */
     public function test_store()
     {
+
         Storage::fake('local');
 
         $person = create(Person::class);
@@ -188,6 +234,8 @@ class PersonPhotoTest extends TestCase
         ]);
 
         $path = json_decode($response->getContent())->path;
+
+        $this->assertTrue(ends_with($path, '-' . $person->id . '-' . snake_case($person->name) .'.png'));
 
         Storage::disk('local')->assertExists($path);
 
@@ -201,13 +249,27 @@ class PersonPhotoTest extends TestCase
     /**
      * Test authorization for show person photo.
      *
+     * @group z
      * @test
      * @return void
      */
     public function check_authorization_uri_to_show_photo()
     {
         $person = $this->createPersonWithPhoto();
-        $this->check_json_api_uri_authorization("/api/v1/person/" . $person->id . "/photo",'get');
+        $otherPerson= create(Person::class);
+
+        $uri = "/api/v1/person/". $person->id . "/photo";
+        $attributes = [ 'photo' => UploadedFile::fake()->image('photo.png')];
+        $this->unauthorized_user_cannot_browse_uri($uri, 'GET' ,$attributes);
+
+        $user = create(User::class);
+        $user->persons()->attach($otherPerson);
+        $this->signIn($user,'api');
+        $response = $this->json('GET',$uri, $attributes);
+        $response->assertStatus(403);
+
+        $this->authorized_user_can_browse_uri_api($uri, 'GET', $attributes);
+
     }
 
     /**
@@ -274,12 +336,14 @@ class PersonPhotoTest extends TestCase
         $this->signInAsRelationshipsManager();
         $person = create(Person::class);
 
+        $filename = $this->randomFileName();
         $person->photos()->create([
             'storage' => 'local',
-            'path' => 'user_photos/testphoto.png'
+            'path' => 'user_photos/' . $filename . '.png',
+            'origin' => basename('user_photos/' . $filename . '.png')
         ]);
 
-        Storage::delete('user_photos/testphoto.png');
+        Storage::delete('user_photos/' . $filename . '.png');
 
         $this->expectException(FileNotFoundException::class);
         $this->withoutExceptionHandling();
@@ -297,10 +361,12 @@ class PersonPhotoTest extends TestCase
     {
         $this->signInAsRelationshipsManager();
         $person = create(Person::class);
-        $path = Storage::putFileAs('user_photos', UploadedFile::fake()->image('testphoto.png'), 'testphoto.png');
+        $filename = $this->randomFileName() . '.png';
+        $path = Storage::putFileAs('user_photos', UploadedFile::fake()->image( $filename ), $filename);
         $person->photos()->create([
             'storage' => 'local',
-            'path' => 'user_photos/testphoto.png'
+            'path' => 'user_photos/' . $filename,
+            'origin' => $filename .'.png'
         ]);
 
         $response = $this->get('/person/' . $person->id .'/photo');
@@ -433,16 +499,25 @@ class PersonPhotoTest extends TestCase
     /**
      * Test authorization for update person photo.
      *
-     * @group p
      * @test
      * @return void
      */
     public function check_authorization_uri_to_update_photo()
     {
         $person = $this->createPersonWithPhoto();
-        $this->check_json_api_uri_authorization("/api/v1/person/" . $person->id . "/photo",'put',[
-            'photo' => UploadedFile::fake()->image('photo.png')
-        ]);
+        $otherPerson= create(Person::class);
+
+
+        $uri = "/api/v1/person/". $person->id . "/photo";
+        $attributes = [ 'photo' => UploadedFile::fake()->image('photo.png')];
+        $this->unauthorized_user_cannot_browse_uri($uri, 'PUT' ,$attributes);
+        $user = create(User::class);
+        $this->signIn($user,'api');
+        $user->persons()->attach($otherPerson);
+        $response = $this->json('PUT',$uri, $attributes);
+        $response->assertStatus(403);
+
+        $this->authorized_user_can_browse_uri_api($uri, 'PUT', $attributes);
     }
 
     /**
@@ -473,6 +548,58 @@ class PersonPhotoTest extends TestCase
             'path' => $path,
             'person_id' => $person->id,
         ]);
+    }
+
+
+    /**
+     * Check authorization for list user photos.
+     *
+     * @test
+     */
+    public function check_authorization_for_list_user_photos()
+    {
+        $method = 'GET';
+        $this->unauthorized_user_cannot_browse_uri('/api/v1/person/1/photos', $method);
+
+        $user = $this->createUserWithFoto();
+//        dd(Person::findOrFail($user->person->id)->photos()->first());
+        $uri = '/api/v1/person/' . $user->person->id . '/photos';
+        $this->authorized_user_can_browse_uri_api($uri, $method);
+
+        $this->signIn($user,'api');
+        $response = $this->json(strtoupper($method),$uri);
+        $response->assertStatus(200);
+
+
+        $otherUser = $this->createUserWithFoto('node_modules/admin-lte/dist/img/avatar2.png');
+        $uri = '/api/v1/person/' . $otherUser->person->id . '/photos';
+        $this->an_user_cannot_browse_uri_api($uri, $method, [], $user);
+
+    }
+
+    /**
+     * An user can list his own photos.
+     *
+     * @group w
+     * @test
+     */
+    public function an_user_can_list_his_own_photos()
+    {
+        $user = $this->createUserWithFoto();
+        add_photo_to_user($user,'node_modules/admin-lte/dist/img/avatar2.png');
+        add_photo_to_user($user,'node_modules/admin-lte/dist/img/avatar3.png');
+        add_photo_to_user($user,'node_modules/admin-lte/dist/img/avatar5.png');
+
+        $this->signIn($user,'api');
+
+        //Execute
+        $response = $this->json('GET', '/api/v1/person/' . $user->person->id . '/photos');
+        $response->assertSuccessful();
+        $response->assertJsonStructure([
+            [
+                'id', 'storage','origin','path','person_id','created_at','updated_at'
+            ],
+        ]);
 
     }
 
@@ -481,10 +608,10 @@ class PersonPhotoTest extends TestCase
      *
      * @return mixed
      */
-    protected function createPersonWithPhoto($photoPath = 'user_photos/testphoto.png')
+    protected function createPersonWithPhoto($photoPath = 'node_modules/admin-lte/dist/img/avatar.png')
     {
         $person = create(Person::class);
-        $this->attachPhoto($photoPath, $person);
+        add_photo_to_person($photoPath, $person);
         return $person;
     }
 
@@ -494,9 +621,9 @@ class PersonPhotoTest extends TestCase
     protected function createPersonWithPhotos()
     {
         $person = create(Person::class);
-        $this->attachPhoto('user_photos/testphoto.png', $person);
-        $this->attachPhoto('user_photos/testphoto1.png', $person);
-        $this->attachPhoto('user_photos/testphoto2.png', $person);
+        add_photo_to_person('node_modules/admin-lte/dist/img/avatar.png', $person);
+        add_photo_to_person('node_modules/admin-lte/dist/img/avatar2.png', $person);
+        add_photo_to_person('node_modules/admin-lte/dist/img/avatar3.png', $person);
         return $person;
     }
 
@@ -505,23 +632,19 @@ class PersonPhotoTest extends TestCase
      *
      * @return mixed
      */
-    protected function createUserWithFoto()
+    protected function createUserWithFoto($photoPath = 'node_modules/admin-lte/dist/img/avatar.png')
     {
-        $person = $this->createPersonWithPhoto();
+        $person = $this->createPersonWithPhoto($photoPath);
         $person->users()->attach(factory(App\User::class)->create());
         return $person->users()->first();
     }
 
     /**
-     * @param $photoPath
-     * @param $person
+     * @return mixed
      */
-    protected function attachPhoto($photoPath, $person)
+    protected function randomFileName()
     {
-        Storage::putFileAs('user_photos', UploadedFile::fake()->image('testphoto.png'), 'testphoto.png');
-        $person->photos()->create([
-            'storage' => 'local',
-            'path' => $photoPath
-        ]);
+        $faker = \Faker\Factory::create();
+        return $faker->unique()->word();
     }
 }

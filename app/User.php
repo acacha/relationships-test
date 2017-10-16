@@ -41,6 +41,6 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $with = ['persons'];
+//    protected $with = ['persons'];
 
 }
