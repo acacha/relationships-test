@@ -16,10 +16,18 @@ use Tests\Traits\CheckJsonAPIUriAuthorization;
 /**
  * Class PersonPhotoTest.
  *
+ * Please run npm install before executing this tests
+ *
  * @package Tests\Feature
  */
 class PersonPhotoTest extends TestCase
 {
+
+    const AVATAR_PATH = 'node_modules/admin-lte/dist/img/avatar.png';
+    const AVATAR2_PATH = 'node_modules/admin-lte/dist/img/avatar2.png';
+    const AVATAR3_PATH = 'node_modules/admin-lte/dist/img/avatar3.png';
+    const AVATAR4_PATH = 'node_modules/admin-lte/dist/img/avatar5.png';
+
     use CheckJsonAPIUriAuthorization,
         CanSignInAsRelationshipsManager,
         RefreshDatabase;
@@ -249,7 +257,6 @@ class PersonPhotoTest extends TestCase
     /**
      * Test authorization for show person photo.
      *
-     * @group z
      * @test
      * @return void
      */
@@ -571,7 +578,7 @@ class PersonPhotoTest extends TestCase
         $response->assertStatus(200);
 
 
-        $otherUser = $this->createUserWithFoto('node_modules/admin-lte/dist/img/avatar2.png');
+        $otherUser = $this->createUserWithFoto(base_path(self::AVATAR2_PATH));
         $uri = '/api/v1/person/' . $otherUser->person->id . '/photos';
         $this->an_user_cannot_browse_uri_api($uri, $method, [], $user);
 
@@ -580,15 +587,14 @@ class PersonPhotoTest extends TestCase
     /**
      * An user can list his own photos.
      *
-     * @group w
      * @test
      */
     public function an_user_can_list_his_own_photos()
     {
         $user = $this->createUserWithFoto();
-        add_photo_to_user($user,'node_modules/admin-lte/dist/img/avatar2.png');
-        add_photo_to_user($user,'node_modules/admin-lte/dist/img/avatar3.png');
-        add_photo_to_user($user,'node_modules/admin-lte/dist/img/avatar5.png');
+        add_photo_to_user($user, base_path(self::AVATAR2_PATH));
+        add_photo_to_user($user, base_path(self::AVATAR3_PATH));
+        add_photo_to_user($user, base_path(self::AVATAR4_PATH));
 
         $this->signIn($user,'api');
 
@@ -608,11 +614,24 @@ class PersonPhotoTest extends TestCase
      *
      * @return mixed
      */
-    protected function createPersonWithPhoto($photoPath = 'node_modules/admin-lte/dist/img/avatar.png')
+    protected function createPersonWithPhoto($photoPath = null)
     {
+        $photoPath = $this->defaultPhotoPath($photoPath);
         $person = create(Person::class);
         add_photo_to_person($photoPath, $person);
         return $person;
+    }
+
+    /**
+     * Get default photo path.
+     *
+     * @param $photoPath
+     * @return string
+     */
+    protected function defaultPhotoPath($photoPath)
+    {
+        if ($photoPath == null) return base_path(self::AVATAR_PATH);
+        return $photoPath;
     }
 
     /**
@@ -621,9 +640,9 @@ class PersonPhotoTest extends TestCase
     protected function createPersonWithPhotos()
     {
         $person = create(Person::class);
-        add_photo_to_person('node_modules/admin-lte/dist/img/avatar.png', $person);
-        add_photo_to_person('node_modules/admin-lte/dist/img/avatar2.png', $person);
-        add_photo_to_person('node_modules/admin-lte/dist/img/avatar3.png', $person);
+        add_photo_to_person(base_path(self::AVATAR_PATH), $person);
+        add_photo_to_person(base_path(self::AVATAR2_PATH), $person);
+        add_photo_to_person(base_path(self::AVATAR3_PATH), $person);
         return $person;
     }
 
@@ -632,8 +651,9 @@ class PersonPhotoTest extends TestCase
      *
      * @return mixed
      */
-    protected function createUserWithFoto($photoPath = 'node_modules/admin-lte/dist/img/avatar.png')
+    protected function createUserWithFoto($photoPath = null)
     {
+        $photoPath = $this->defaultPhotoPath($photoPath);
         $person = $this->createPersonWithPhoto($photoPath);
         $person->users()->attach(factory(App\User::class)->create());
         return $person->users()->first();
