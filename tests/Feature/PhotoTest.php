@@ -114,6 +114,31 @@ class PhotoTest extends TestCase
     }
 
     /**
+     * Check authorization showing photos.
+     *
+     * @test
+     */
+    public function check_authorization_showing_photos()
+    {
+        $user = factory(User::class)->create();
+        $person = factory(Person::class)->create();
+        $user->persons()->attach($person->id);
+        $photo = create($photo = Photo::class,['person_id' => $person->id]);
+        $photoPathtokens = explode('/',$photo->path);
+        $file = new File(base_path(self::AVATAR2_PATH));
+        Storage::disk('local')->putFileAs($photoPathtokens[0], $file , $photoPathtokens[1]);
+        $this->unauthorized_user_cannot_browse_uri('/photos/' . $photo->id);
+
+        $user = factory(User::class)->create();
+        $this->signIn($user, 'api');
+        $response = $this->json('GET', '/photos/' . $photo->id);
+        $response->assertStatus(404);
+
+        $this->authorized_user_can_browse_uri_api('/photos/' . $photo->id);
+
+    }
+
+    /**
      * Shows 404 for unexisting photo.
      *
      * @test
@@ -126,5 +151,145 @@ class PhotoTest extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Logged users can remove is own photos.
+     *
+     * @test
+     * @return void
+     */
+    public function logged_users_can_remove_is_own_photos()
+    {
+        Storage::fake('local');
 
+        $user = factory(User::class)->create();
+        $person = factory(Person::class)->create();
+        $user->persons()->attach($person->id);
+        $photo = create($photo = Photo::class,['person_id' => $person->id]);
+        $photoPathtokens = explode('/',$photo->path);
+        $file = new File(base_path(self::AVATAR_PATH));
+        Storage::disk('local')->putFileAs($photoPathtokens[0], $file , $photoPathtokens[1]);
+        $this->signIn($user,'api');
+
+        $response = $this->json('DELETE','/api/v1/photos/' . $photo->id);
+
+        $response->assertStatus(200);
+
+        Storage::disk('local')->assertMissing($photo->path);
+
+        $this->assertDatabaseMissing('photos', [
+                'id' => $photo->id,
+                'storage' => $photo->storage,
+                'path' => $photo->path,
+                'person_id' => $person->id,
+            ]
+        );
+    }
+
+    /**
+     * Manager users can remove photos
+     *
+     * @test
+     * @return void
+     */
+    public function manager_user_can_remove_photos()
+    {
+        Storage::fake('local');
+
+        $user = factory(User::class)->create();
+        $person = factory(Person::class)->create();
+        $user->persons()->attach($person->id);
+        $photo = create($photo = Photo::class,['person_id' => $person->id]);
+        $photoPathtokens = explode('/',$photo->path);
+        $file = new File(base_path(self::AVATAR_PATH));
+        Storage::disk('local')->putFileAs($photoPathtokens[0], $file , $photoPathtokens[1]);
+
+        $this->signInAsRelationshipsManager('api');
+
+        $response = $this->json('DELETE','/api/v1/photos/' . $photo->id);
+
+        $response->assertStatus(200);
+
+        Storage::disk('local')->assertMissing($photo->path);
+
+        $this->assertDatabaseMissing('photos', [
+                'id' => $photo->id,
+                'storage' => $photo->storage,
+                'path' => $photo->path,
+                'person_id' => $person->id,
+            ]
+        );
+    }
+
+    /**
+     * Check authorization deleting photos.
+     *
+     * @test
+     */
+    public function check_authorization_deleting_photos()
+    {
+        $user = factory(User::class)->create();
+        $person = factory(Person::class)->create();
+        $user->persons()->attach($person->id);
+        $photo = create($photo = Photo::class,['person_id' => $person->id]);
+        $photoPathtokens = explode('/',$photo->path);
+        $file = new File(base_path(self::AVATAR2_PATH));
+        Storage::disk('local')->putFileAs($photoPathtokens[0], $file , $photoPathtokens[1]);
+        $uri = '/api/v1/photos/' . $photo->id;
+        $this->unauthorized_user_cannot_browse_uri($uri,'DELETE');
+
+        $user = factory(User::class)->create();
+        $this->signIn($user, 'api');
+        $response = $this->json('DELETE', $uri);
+        $response->assertStatus(404);
+
+        $this->authorized_user_can_browse_uri_api($uri,'DELETE');
+
+    }
+
+    /**
+     * Shows 404 for unexisting photo deletion.
+     *
+     * @test
+     * @return void
+     */
+    public function shows_404_for_unexisting_photo_deletion()
+    {
+        $this->signInAsRelationshipsManager('api');
+        $response = $this->json( 'DELETE','/api/v1/photos/99999');
+        $response->assertStatus(404);
+    }
+
+    /**
+     * Logged users can update is own photos.
+     *
+     * @test
+     * @return void
+     */
+    public function logged_users_can_update_own_photos()
+    {
+        Storage::fake('local');
+
+        $user = factory(User::class)->create();
+        $person = factory(Person::class)->create();
+        $user->persons()->attach($person->id);
+        $photo = create($photo = Photo::class,['person_id' => $person->id]);
+        $photoPathtokens = explode('/',$photo->path);
+        $file = new File(base_path(self::AVATAR_PATH));
+        Storage::disk('local')->putFileAs($photoPathtokens[0], $file , $photoPathtokens[1]);
+        $this->signIn($user,'api');
+
+        $response = $this->json('PUT','/api/v1/photos/' . $photo->id);
+
+        $response->assertStatus(200);
+
+//        Storage::disk('local')->assertMissing($photo->path);
+//
+//        $this->assertDatabaseMissing('photos', [
+//                'id' => $photo->id,
+//                'storage' => $photo->storage,
+//                'path' => $photo->path,
+//                'person_id' => $person->id,
+//            ]
+//        );
+    }
 }
