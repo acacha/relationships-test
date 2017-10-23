@@ -8,6 +8,7 @@ use App;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\File;
+use Illuminate\Http\UploadedFile;
 use Storage;
 use Tests\TestCase;
 use Tests\Traits\CanSignInAsRelationshipsManager;
@@ -260,12 +261,12 @@ class PhotoTest extends TestCase
     }
 
     /**
-     * Logged users can update is own photos.
+     * Logged users can post is own photos.
      *
      * @test
      * @return void
      */
-    public function logged_users_can_update_own_photos()
+    public function logged_users_can_post__is_own_photos()
     {
         Storage::fake('local');
 
@@ -278,18 +279,32 @@ class PhotoTest extends TestCase
         Storage::disk('local')->putFileAs($photoPathtokens[0], $file , $photoPathtokens[1]);
         $this->signIn($user,'api');
 
-        $response = $this->json('PUT','/api/v1/photos/' . $photo->id);
-
+        $this->withoutExceptionHandling();
+        $response = $this->json('POST','/api/v1/photos/' . $photo->id,[
+            'file' => UploadedFile::fake()->image('photo.png')
+        ]);
+        $path = json_decode($content = $response->getContent())->path;
+        $storage = json_decode($content)->storage;
         $response->assertStatus(200);
 
-//        Storage::disk('local')->assertMissing($photo->path);
-//
-//        $this->assertDatabaseMissing('photos', [
-//                'id' => $photo->id,
-//                'storage' => $photo->storage,
-//                'path' => $photo->path,
-//                'person_id' => $person->id,
-//            ]
-//        );
+        Storage::disk('local')->assertMissing($photo->path);
+        Storage::disk('local')->assertExists($path);
+
+        $this->assertDatabaseHas('photos', [
+                'id' => $photo->id,
+                'storage' => $storage,
+                'path' => $path,
+                'person_id' => $person->id,
+            ]
+        );
+
+        $this->assertDatabaseMissing('photos', [
+                'storage' => $photo->storage,
+                'path' => $photo->path,
+                'person_id' => $person->id,
+            ]
+        );
+
+
     }
 }

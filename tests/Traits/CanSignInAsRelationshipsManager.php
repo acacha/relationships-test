@@ -36,9 +36,9 @@ trait CanSignInAsRelationshipsManager
      * @param null $driver
      * @return $this
      */
-    protected function signInAsRelationshipsManager($driver = null)
+    protected function signInAsRelationshipsManager($driver = null, $user = null)
     {
-        return $this->signInWithRole('manage-relationships', $driver);
+        return $this->signInWithRole('manage-relationships', $driver, $user);
     }
 
     /**
@@ -48,9 +48,9 @@ trait CanSignInAsRelationshipsManager
      * @param null $driver
      * @return $this
      */
-    protected function signInWithRole($role, $driver = null)
+    protected function signInWithRole($role, $driver = null, $user = null)
     {
-        $user = $this->create('App\User');
+        if ($user == null) $user = $this->create('App\User');
         $user->assignRole($role);
         $this->signIn($user,$driver);
         return $this;

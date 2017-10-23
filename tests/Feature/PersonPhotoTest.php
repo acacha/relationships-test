@@ -57,8 +57,8 @@ class PersonPhotoTest extends TestCase
         $response->assertJson([
             'message' => 'The given data was invalid.',
             'errors' => [
-                'photo' => [
-                    'The photo field is required.'
+                'file' => [
+                    'The file field is required.'
                 ]
             ]
         ]);
@@ -74,7 +74,7 @@ class PersonPhotoTest extends TestCase
     {
         $this->signInAsRelationshipsManager('api');
         $response = $this->json('POST','/api/v1/person/1/photo', [
-            'photo' => UploadedFile::fake()->image('photo.png')
+            'file' => UploadedFile::fake()->image('photo.png')
         ]);
 
         $response->assertStatus(404);
@@ -92,7 +92,7 @@ class PersonPhotoTest extends TestCase
         $otherPerson = create(Person::class);
 
         $uri = "/api/v1/person/". $person->id . "/photo";
-        $attributes = [ 'photo' => UploadedFile::fake()->image('photo.png')];
+        $attributes = [ 'file' => UploadedFile::fake()->image('photo.png')];
         $this->unauthorized_user_cannot_browse_uri($uri, 'POST' ,$attributes);
         $user = create(User::class);
         $this->signIn($user,'api');
@@ -185,13 +185,13 @@ class PersonPhotoTest extends TestCase
         Storage::fake('local');
         $filename1 = $this->randomFileName();
         $response = $this->json('POST', '/api/v1/person/' . $person->id . '/photo', [
-            'photo' => UploadedFile::fake()->image($filename1 . '.png')
+            'file' => UploadedFile::fake()->image($filename1 . '.png')
         ]);
         $path1 = json_decode($response->getContent())->path;
         $filename2 = $this->randomFileName();
 
         $response = $this->json('POST', '/api/v1/person/' . $person->id . '/photo', [
-            'photo' => UploadedFile::fake()->image($filename2. '.png')
+            'file' => UploadedFile::fake()->image($filename2. '.png')
         ]);
         $path2 = json_decode($response->getContent())->path;
 
@@ -238,7 +238,7 @@ class PersonPhotoTest extends TestCase
 
         $this->signInAsRelationshipsManager('api');
         $response = $this->json('POST', '/api/v1/person/' . $person->id . '/photo', [
-            'photo' => UploadedFile::fake()->image('photo.png')
+            'file' => UploadedFile::fake()->image('photo.png')
         ]);
 
         $path = json_decode($response->getContent())->path;
@@ -266,7 +266,7 @@ class PersonPhotoTest extends TestCase
         $otherPerson= create(Person::class);
 
         $uri = "/api/v1/person/". $person->id . "/photo";
-        $attributes = [ 'photo' => UploadedFile::fake()->image('photo.png')];
+        $attributes = [ 'file' => UploadedFile::fake()->image('photo.png')];
         $this->unauthorized_user_cannot_browse_uri($uri, 'GET' ,$attributes);
 
         $user = create(User::class);
@@ -516,7 +516,7 @@ class PersonPhotoTest extends TestCase
 
 
         $uri = "/api/v1/person/". $person->id . "/photo";
-        $attributes = [ 'photo' => UploadedFile::fake()->image('photo.png')];
+        $attributes = [ 'file' => UploadedFile::fake()->image('photo.png')];
         $this->unauthorized_user_cannot_browse_uri($uri, 'PUT' ,$attributes);
         $user = create(User::class);
         $this->signIn($user,'api');
@@ -536,16 +536,18 @@ class PersonPhotoTest extends TestCase
     public function a_manager_can_update_photo()
     {
         //Same as storage.
-
         Storage::fake('local');
 
-        $person = create(Person::class);
+        $person = $this->createPersonWithPhoto();
+
+        $this->withoutExceptionHandling();
 
         $this->signInAsRelationshipsManager('api');
         $response = $this->json('PUT', '/api/v1/person/' . $person->id . '/photo', [
-            'photo' => UploadedFile::fake()->image('photo.png')
+            'file' => UploadedFile::fake()->image('photo.png')
         ]);
 
+//        $response->dump();
         $path = json_decode($response->getContent())->path;
 
         Storage::disk('local')->assertExists($path);
