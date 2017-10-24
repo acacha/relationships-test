@@ -36,6 +36,10 @@ Route::group(['middleware' => 'auth'], function () {
     #adminlte_routes
 
     Route::get('/test/component/user-profile-photo', 'PersonProfilePhotoTestController@test');
+    Route::get('/test/component/personal-data-form', 'PersonalDataFormTestController@test');
+    Route::get('/test/component/personal-data-subform', 'PersonalDataSubFormTestController@test');
+    Route::get('/test/component/identifier-input', 'IdentifierInputController@test');
+
 });
 
 

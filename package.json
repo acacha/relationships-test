@@ -38,6 +38,8 @@
     "vue": "^2.1.10"
   },
   "dependencies": {
-    "babel-preset-env": "^1.6.0"
+    "babel-preset-env": "^1.6.0",
+    "vue-multiselect": "^2.0.3",
+    "vue-typeahead": "^2.3.2"
   }
 }
