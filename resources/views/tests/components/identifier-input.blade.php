@@ -9,7 +9,7 @@ Test component personal-data-form
 
     <identifier-input></identifier-input>
 
-    <identifier-select></identifier-select>
+    <identifier-select selected="NIF"></identifier-select>
 
     @php
     use Acacha\Relationships\Models\Identifier;
