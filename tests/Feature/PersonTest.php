@@ -56,6 +56,8 @@ class PersonTest extends TestCase
             'birthplace_id' => $person->birthplace_id,
             'gender' => $person->gender,
             'identifier' => $person->identifier,
+            'identifier-id' => $person->identifier_id,
+            'identifier-type' => $person->identifier_type,
             'civil_status' => $person->civil_status,
             'notes' => $person->notes,
             'updated_at' => $person->updated_at->toDateTimeString(),

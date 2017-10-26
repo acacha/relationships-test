@@ -55,16 +55,17 @@ class IdentifierTest extends TestCase
         $person = create_person_with_nif();
         $this->signInAsRelationshipsManager('api');
         $response  = $this->json('GET','api/v1/fullname');
-//        $response->dump();
         $response->assertSuccessful();
         $response->assertJsonStructure([[
             'name',
             'identifier',
+            'identifier_id',
             'id'
         ]]);
         $response->assertJson([[
             'name' => $person->name,
             'identifier' => $person->identifier,
+            'identifier_id' => $person->identifier_id,
             'id' => $person->id
         ]]);
     }

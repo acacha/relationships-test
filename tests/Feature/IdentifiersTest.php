@@ -29,7 +29,7 @@ class IdentifierTest extends TestCase
         parent::setUp();
         App::setLocale('en');
         initialize_relationships_management_permissions();
-        $this->withoutExceptionHandling();
+//        $this->withoutExceptionHandling();
     }
 
     /**
@@ -47,7 +47,6 @@ class IdentifierTest extends TestCase
         $this->signInAsRelationshipsManager('api');
         $response  = $this->json('GET','api/v1/identifier');
         $response->assertSuccessful();
-        $response->dump();
         $response->assertJsonStructure([
             [
                 'id',
@@ -68,8 +67,6 @@ class IdentifierTest extends TestCase
     public function check_authorization_uri_to_show_all_identifiers()
     {
         $this->check_json_api_uri_authorization('api/v1/identifier');
-
     }
-
 
 }
