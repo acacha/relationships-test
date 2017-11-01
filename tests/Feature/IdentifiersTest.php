@@ -2,13 +2,11 @@
 
 namespace Tests\Feature;
 
-use Acacha\Relationships\Models\Identifier;
 use App;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CanSignInAsRelationshipsManager;
 use Tests\Traits\CheckJsonAPIUriAuthorization;
-
 
 /**
  * Class IdentifierTest.
@@ -33,7 +31,7 @@ class IdentifierTest extends TestCase
     }
 
     /**
-     * Search can find a complete value.
+     * Show all identifiers.
      *
      * @test
      */
