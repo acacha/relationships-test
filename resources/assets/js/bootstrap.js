@@ -15,7 +15,6 @@ try {
 } catch (e) {}
 
 require('admin-lte')
-window.toastr = require('toastr')
 require('icheck')
 
 /**

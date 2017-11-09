@@ -32,6 +32,9 @@ Vue.component(
   require('./components/passport/PersonalAccessTokens.vue')
 );
 
+import ToggleButton from 'vue-js-toggle-button'
+Vue.use(ToggleButton)
+
 const app = new Vue({
     el: '#app'
 });
