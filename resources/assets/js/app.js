@@ -17,6 +17,8 @@ window.Vue = require('vue');
 
 require('relationships-bootstrap');
 
+Vue.component('test-esborrar-acacha-forms-vuex', require('./components/TestEsborrarAcachaFormsVuexComponent.vue'))
+
 Vue.component(
   'passport-clients',
   require('./components/passport/Clients.vue')

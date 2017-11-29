@@ -40,6 +40,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/test/component/personal-data-subform', 'PersonalDataSubFormTestController@test');
     Route::get('/test/component/identifier-input', 'IdentifierInputController@test');
 
+
+    Route::view('/proves', 'proves');
 });
 
 

@@ -42,16 +42,18 @@
     "lodash": "^4.17.4",
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
+    "moxios": "^0.4.0",
     "vue": "^2.5.3",
     "vue-test-utils": "^1.0.0-beta.4"
   },
   "dependencies": {
     "babel-preset-env": "^1.6.1",
+    "change-case": "^3.0.1",
     "inputmask": "^3.3.10",
     "moment": "^2.19.1",
-    "moxios": "^0.4.0",
     "vue-js-toggle-button": "^1.2.0",
     "vue-multiselect": "^2.0.6",
-    "vue-typeahead": "^2.3.2"
+    "vue-typeahead": "^2.3.2",
+    "vuex": "^3.0.1"
   }
 }
