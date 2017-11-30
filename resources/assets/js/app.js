@@ -32,6 +32,8 @@ Vue.component(
   require('./components/passport/PersonalAccessTokens.vue')
 );
 
+Vue.component('adminlte-flash-message', require('./components/adminlte/message/AdminlteMessageComponent.vue'));
+
 import ToggleButton from 'vue-js-toggle-button'
 Vue.use(ToggleButton)
 
