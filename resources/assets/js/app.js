@@ -15,7 +15,7 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-require('relationships-bootstrap');
+require('acacha-relationships');
 
 Vue.component(
   'passport-clients',
@@ -32,11 +32,18 @@ Vue.component(
   require('./components/passport/PersonalAccessTokens.vue')
 );
 
-Vue.component('adminlte-flash-message', require('./components/adminlte/message/AdminlteMessageComponent.vue'));
+Vue.component('adminlte-flash-message', require('./components/adminlte/message/AdminlteFlashMessageComponent.vue'));
 
 import ToggleButton from 'vue-js-toggle-button'
 Vue.use(ToggleButton)
 
+import Vuex from 'vuex';
+Vue.use(Vuex);
+
+const debug = process.env.NODE_ENV !== 'production'
+const store = new Vuex.Store({strict: debug});
+
 const app = new Vue({
-    el: '#app'
+  el: '#app',
+  store,
 });

@@ -17,7 +17,8 @@ mix.js('resources/assets/js/app.js', 'public/js')
   .webpackConfig({
     resolve: {
       modules: [
-        path.resolve(__dirname, './relationships/resources/assets/js'),
+        path.resolve(__dirname, 'javascript'),
+        path.resolve(__dirname, 'relationships/resources/assets/js'),
         path.resolve(__dirname, 'node_modules')
       ]
     }
