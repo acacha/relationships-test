@@ -15,8 +15,6 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-require('acacha-relationships');
-
 Vue.component(
   'passport-clients',
   require('./components/passport/Clients.vue')
@@ -39,6 +37,8 @@ Vue.use(ToggleButton)
 
 import Vuex from 'vuex';
 Vue.use(Vuex);
+
+require('acacha-relationships');
 
 const debug = process.env.NODE_ENV !== 'production'
 const store = new Vuex.Store({strict: debug});
