@@ -33,6 +33,8 @@ if (!function_exists('create_admin_user')) {
 if (!function_exists('first_user_as_manager')) {
     function first_user_as_manager()
     {
-        User::all()->first()->assignRole('manage-relationships');
+        $firstUser = User::all()->first();
+        $firstUser->assignRole('manage-relationships');
+        $firstUser->givePermissionTo('disable-validation');
     }
 }
