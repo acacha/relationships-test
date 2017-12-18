@@ -1,4 +1,5 @@
 const { mix } = require('laravel-mix');
+let path = require('path')
 
 /*
  |--------------------------------------------------------------------------
@@ -18,6 +19,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
     resolve: {
       modules: [
         path.resolve(__dirname, 'javascript'),
+        path.resolve(__dirname, 'users/resources/assets/js'),
         path.resolve(__dirname, 'relationships/resources/assets/js'),
         path.resolve(__dirname, 'node_modules')
       ]
