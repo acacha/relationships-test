@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use Acacha\Relationships\Models\Address;
-use Acacha\Relationships\Models\Contact;
+use Acacha\Relationships\Models\Email;
+use Acacha\Relationships\Models\Mobile;
+use Acacha\Relationships\Models\Phone;
 use Acacha\Relationships\Models\Identifier;
 use Acacha\Relationships\Models\PersonMigrationInfo;
 use Acacha\Relationships\Models\Photo;
@@ -167,12 +169,11 @@ class SeedPeople extends Command
 
             // Corporative Email
             if ( $person->person_email ) {
-                $corporativeEmail = Contact::where([
+                $corporativeEmail = Email::where([
                     'value' => $person->person_email,
-                    'contact_type_id'  => 2
                 ])->first();
                 try {
-                    $newPerson->contacts()->attach($corporativeEmail, ['order' => 1]);
+                    $newPerson->emails()->attach($corporativeEmail);
                 } catch (\Illuminate\Database\QueryException $qe) {
                     if ( !str_contains($qe->getMessage(),'Duplicate entry') ) dump('Exception: '. $qe->getMessage());
                 }
@@ -180,12 +181,11 @@ class SeedPeople extends Command
 
             // Personal Email
             if ( $person->person_secondary_email ) {
-                $personalEmail = Contact::where([
-                    'value' => $person->person_secondary_email,
-                    'contact_type_id'  => 2
+                $personalEmail = Email::where([
+                    'value' => $person->person_secondary_email
                 ])->first();
                 try {
-                    $newPerson->contacts()->attach($personalEmail, ['order' => 2]);
+                    $newPerson->emails()->attach($personalEmail);
                 } catch (\Illuminate\Database\QueryException $qe) {
                     if ( !str_contains($qe->getMessage(),'Duplicate entry') ) dump('Exception: '. $qe->getMessage());
                 }
@@ -193,12 +193,11 @@ class SeedPeople extends Command
 
             // Terciary email
             if ( $person->person_terciary_email ) {
-                $thirdEmail = Contact::where([
-                    'value' => $person->person_terciary_email,
-                    'contact_type_id'  => 2
+                $thirdEmail = Email::where([
+                    'value' => $person->person_terciary_email
                 ])->first();
                 try {
-                    $newPerson->contacts()->attach($thirdEmail, ['order' => 3]);
+                    $newPerson->emails()->attach($thirdEmail, ['order' => 3]);
                 } catch (\Illuminate\Database\QueryException $qe) {
                     if ( !str_contains($qe->getMessage(),'Duplicate entry') ) dump('Exception: '. $qe->getMessage());
                 }
@@ -206,23 +205,21 @@ class SeedPeople extends Command
 
             //Phones
             if ( $person->person_mobile ) {
-                $mobile = Contact::where([
-                    'value' => $person->person_mobile,
-                    'contact_type_id'  => 1
+                $mobile = Mobile::where([
+                    'value' => $person->person_mobile
                 ])->first();
                 try {
-                    $newPerson->contacts()->attach($mobile, ['order' => 1]);
+                    $newPerson->mobiles()->attach($mobile);
                 } catch (\Illuminate\Database\QueryException $qe) {
                     if ( !str_contains($qe->getMessage(),'Duplicate entry') ) dump('Exception: '. $qe->getMessage());
                 }
             }
             if ( $person->person_telephoneNumber ) {
-                $phone = Contact::where([
-                    'value' => $person->person_telephoneNumber,
-                    'contact_type_id'  => 1
+                $phone = Phone::where([
+                    'value' => $person->person_telephoneNumber
                 ])->first();
                 try {
-                    $newPerson->contacts()->attach($phone, ['order' => 2]);
+                    $newPerson->phones()->attach($phone);
                 } catch (\Illuminate\Database\QueryException $qe) {
                     if ( !str_contains($qe->getMessage(),'Duplicate entry') ) dump('Exception: '. $qe->getMessage());
                 }
