@@ -27,6 +27,7 @@
         "laravel/passport": "^4.0",
         "laravel/tinker": "~1.0",
         "laravelcollective/remote": "^5.5",
+        "orangehill/iseed": "^2.5",
         "scool/ebre_escool_model": "dev-master",
         "spatie/laravel-permission": "^2.6"
     },

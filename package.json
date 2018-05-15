@@ -21,7 +21,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "bootstrap-less": "3.3.7",
     "bootstrap-sass": "3.3.7",
-    "cross-env": "^5.1.1",
+    "cross-env": "^5.1.3",
     "eslint": "^3.14.1",
     "eslint-config-standard": "^6.2.1",
     "eslint-friendly-formatter": "^2.0.7",
@@ -40,25 +40,28 @@
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
     "lodash": "^4.17.4",
-    "mocha": "^4.0.1",
+    "mocha": "^4.1.0",
     "mocha-webpack": "^1.0.1",
     "moxios": "^0.4.0",
-    "vue": "^2.5.9",
-    "vue-test-utils": "^1.0.0-beta.7"
+    "vue": "^2.5.13",
+    "vue-test-utils": "^1.0.0-beta.9"
   },
   "dependencies": {
+    "capitalize": "^1.0.0",
     "change-case": "^3.0.1",
     "gravatar": "^1.6.0",
     "inputmask": "^3.3.11",
-    "moment": "^2.19.3",
+    "moment": "^2.20.1",
     "password-generator": "^2.2.0",
+    "sortablejs": "^1.7.0",
     "toastr": "^2.1.4",
     "vue-events": "^3.1.0",
-    "vue-js-toggle-button": "^1.2.1",
+    "vue-js-toggle-button": "^1.2.2",
     "vue-multiselect": "^2.0.8",
     "vue-scrollto": "^2.8.0",
+    "vue-template-compiler": "^2.5.13",
     "vue-typeahead": "^2.3.2",
-    "vuetable-2": "^1.7.1",
+    "vuetable-2": "^1.7.2",
     "vuex": "^3.0.1"
   }
 }
