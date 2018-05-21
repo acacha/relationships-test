@@ -25,5 +25,6 @@ class DatabaseSeeder extends Seeder
         first_user_as_manager();
 
         factory(User::class,50)->create();
+        $this->call(LocationsTableSeeder::class);
     }
 }
